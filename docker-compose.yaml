@@ -4,11 +4,7 @@ services:
     hostname: kafka
     ports:
       - "29092:29092"
-    healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --list"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
+      - "9092:9092"
     environment:
       - PATH=/opt/kafka/bin:$PATH
       # KRaft settings

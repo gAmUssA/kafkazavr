@@ -1,3 +1,5 @@
+import java.time.Duration
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -21,7 +23,13 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-dockerCompose.isRequiredBy(project.tasks.named("run"))
+dockerCompose {
+    isRequiredBy(project.tasks.named("run"))
+    waitForTcpPorts.set(true) // Wait for TCP ports to be available
+    captureContainersOutputToFiles.set(project.file("build/container-logs"))
+    waitForHealthyStateTimeout.set(Duration.ZERO) // Don't wait for healthy state
+    tcpPortsToIgnoreWhenWaiting.set(emptyList<Int>()) // Don't ignore any TCP ports
+}
 
 tasks.withType<Jar> {
     manifest {
@@ -43,7 +51,7 @@ repositories {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
-        vendor.set(JvmVendorSpec.BELLSOFT)
+        // Remove vendor restriction to allow any JDK 17
     }
 //    targetCompatibility = JavaVersion.VERSION_17
 //    sourceCompatibility = JavaVersion.VERSION_17
