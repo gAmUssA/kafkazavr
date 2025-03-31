@@ -1,0 +1,121 @@
+= Kafkazavr Architecture Documentation
+:toc:
+:toclevels: 3
+:icons: font
+
+== Overview
+
+Kafkazavr is a real-time location-based service system implemented as two microservices (Driver and Rider) that communicate through Kafka messaging system. 
+The system provides real-time location tracking and updates through a web interface.
+
+== System Components
+
+=== Microservices
+
+==== Driver Service
+* Role: Handles driver-side operations
+* Implements: Location tracking and real-time updates
+* Communication:
+** Produces to: `driver` topic
+** Consumes from: `rider` topic
+* Endpoints:
+** `/driver` - Web interface
+** `/driver-ws` - WebSocket endpoint for real-time updates
+
+==== Rider Service
+* Role: Handles rider-side operations
+* Implements: Location tracking and real-time updates
+* Communication:
+** Produces to: `rider` topic
+** Consumes from: `driver` topic
+* Endpoints:
+** `/rider` - Web interface
+** `/rider-ws` - WebSocket endpoint for real-time updates
+
+=== Shared Components
+
+==== Actor Pattern
+Both services utilize a common actor pattern that provides:
+
+* Kafka producer-consumer setup
+* WebSocket handling
+* Web interface integration
+* MapBox integration for location visualization
+
+==== Web Interface
+* Interactive map using MapBox
+* Real-time updates via WebSocket
+* Vue.js for frontend interactivity
+* Common styling and assets
+
+=== Infrastructure
+
+==== Apache Kafka
+* Version: 3.9.0
+* Configuration:
+** KRaft mode (no ZooKeeper)
+** Single node setup
+** Internal port: 9092
+** External port: 29092
+* Topics:
+** `driver` - For driver updates
+** `rider` - For rider updates
+
+== Technology Stack
+
+=== Backend
+* Kotlin
+* Ktor framework
+* Apache Kafka
+* WebSocket
+
+=== Frontend
+* Vue.js
+* MapBox GL JS
+* MapBox Directions
+* Turf.js for geospatial calculations
+
+== Communication Flow
+
+[plantuml]
+....
+@startuml
+participant "Driver Service" as DS
+participant "Kafka" as K
+participant "Rider Service" as RS
+
+DS -> K: Produce to driver topic
+K -> RS: Consume from driver topic
+RS -> K: Produce to rider topic
+K -> DS: Consume from rider topic
+@enduml
+....
+
+== Development Setup
+
+=== Prerequisites
+* JDK
+* Kotlin
+* Docker and Docker Compose
+
+=== Running the System
+1. Start Kafka:
+```bash
+./gradlew composeUp
+```
+2. Run Driver service
+3. Run Rider service
+
+== Configuration
+
+=== Kafka Configuration
+* Auto-create topics enabled
+* Single replica setup
+* Transaction support enabled
+* Health checks configured
+
+=== MapBox Configuration
+Required in service configuration:
+* MapBox API key
+* WebSocket URL configuration
+* Service port configuration

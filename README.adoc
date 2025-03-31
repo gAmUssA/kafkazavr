@@ -2,6 +2,26 @@
 
 How to use Kotlin and Ktor to build applications which share geographical coordinates.
 
+== Architecture
+
+Kafkazavr is a real-time location-based service system implemented as two microservices (Driver and Rider) that communicate through Kafka messaging system.
+
+=== System Components
+
+==== Microservices
+* *Driver Service*: Handles driver-side operations, produces to `driver` topic, consumes from `rider` topic
+* *Rider Service*: Handles rider-side operations, produces to `rider` topic, consumes from `driver` topic
+
+==== Technology Stack
+* *Backend*: Kotlin, Ktor framework, Apache Kafka, WebSocket
+* *Frontend*: Vue.js, MapBox GL JS, MapBox Directions, Turf.js
+
+=== Communication Flow
+Driver Service produces messages to the `driver` topic, which are consumed by the Rider Service.
+Rider Service produces messages to the `rider` topic, which are consumed by the Driver Service.
+
+For more detailed architecture information, see link:Architecture.adoc[Architecture Documentation].
+
 == Map functionality
 
 NOTE: Get Mapbox API key https://account.mapbox.com/access-tokens/create
@@ -55,8 +75,3 @@ image::images/rpconsole-list_of_topics.png[]
 
 .Check if data streams through driver(rider) topics
 image::images/rpconsole-driver_topic.png[]
-
-
-
-
-
